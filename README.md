@@ -1,59 +1,257 @@
-# SembrandoVidaFront
+# Arquitectura Angular 21
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.3.
-
-## Development server
-
-To start a local development server, run:
+# 📁 Estructura del Proyecto
 
 ```bash
-ng serve
+src/
+│
+├── app/
+│   ├── core/
+│   ├── shared/
+│   ├── features/
+│   ├── layout/
+│   ├── app.routes.ts
+│   └── main.ts
+│
+├── assets/
+└── environments/
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+# 🧠 Principios de Arquitectura
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## ✔️ 1. Arquitectura basada en Features
+
+Organiza el proyecto por funcionalidades (no por tipo de archivo).
+
+❌ Incorrecto:
 
 ```bash
-ng generate component component-name
+components/
+services/
+models/
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+✅ Correcto:
 
 ```bash
-ng generate --help
+features/
+  ├── auth/
+  ├── products/
+  ├── orders/
 ```
 
-## Building
+Cada feature es un módulo funcional independiente.
 
-To build the project run:
+---
+
+## ✔️ 2. Separación por responsabilidades
+
+| Carpeta  | Responsabilidad                |
+| -------- | ------------------------------ |
+| core     | Servicios globales (singleton) |
+| shared   | Componentes reutilizables      |
+| features | Lógica de negocio              |
+| layout   | Estructura visual              |
+
+---
+
+# 📦 1. Core (Núcleo de la aplicación)
+
+Contiene lógica global que solo debe existir una vez.
 
 ```bash
-ng build
+core/
+├── services/
+│   ├── api.service.ts
+│   ├── auth.service.ts
+├── guards/
+├── interceptors/
+├── models/
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## 🔹 Contenido típico
 
-## Running unit tests
+* Autenticación
+* Interceptores HTTP (tokens, headers)
+* Configuración global de API
+* Guards
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## ⚠️ Reglas
+
+* No depende de features
+* Se instancia una sola vez
+* Acceso global
+
+---
+
+# 🔁 2. Shared (Reutilizable)
+
+Contiene elementos reutilizables sin lógica de negocio.
 
 ```bash
-ng test
+shared/
+├── components/
+│   ├── button/
+│   ├── modal/
+├── directives/
+├── pipes/
+├── utils/
 ```
 
-## Running end-to-end tests
+## 🔹 Ejemplos
 
-For end-to-end (e2e) testing, run:
+* Botones
+* Inputs personalizados
+* Pipes
+* Helpers
+
+## ⚠️ Reglas
+
+* No lógica de negocio
+* No llamadas a API
+
+---
+
+# 🚀 3. Features (Funcionalidades)
+
+Aquí vive la lógica principal del sistema.
 
 ```bash
-ng e2e
+features/
+├── auth/
+│   ├── pages/
+│   ├── components/
+│   ├── services/
+│   ├── models/
+│   ├── auth.routes.ts
+│
+├── products/
+│   ├── pages/
+│   ├── components/
+│   ├── services/
+│   ├── models/
+│
+├── orders/
+│   ├── pages/
+│   ├── components/
+│   ├── services/
+│   ├── models/
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🔹 Estructura interna de un feature
 
-## Additional Resources
+```bash
+feature-name/
+├── pages/        # Vistas principales
+├── components/   # Componentes internos
+├── services/     # Lógica y API específica
+├── models/       # Interfaces
+├── feature.routes.ts
+```
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## ✔️ Ventajas
+
+* Escalable
+* Modular
+* Facilita trabajo en equipo
+* Reduce conflictos en Git
+
+---
+
+# 🎨 4. Layout
+
+Define la estructura visual general de la app.
+
+```bash
+layout/
+├── components/
+│   ├── navbar/
+│   ├── sidebar/
+│   ├── footer/
+```
+
+---
+
+# 🌐 Routing (Angular Standalone)
+
+Uso de lazy loading para cada feature.
+
+```ts
+// app.routes.ts
+export const routes = [
+  {
+    path: 'auth',
+    loadChildren: () => import('./features/auth/auth.routes')
+  },
+  {
+    path: 'products',
+    loadChildren: () => import('./features/products/products.routes')
+  }
+];
+```
+
+## ✔️ Buenas prácticas
+
+* Lazy loading en todos los módulos grandes
+* Separar rutas por feature
+
+---
+
+# 🔌 Comunicación con API
+
+Centralizar llamadas HTTP en `core`.
+
+## 🔹 Servicio base
+
+```ts
+// core/services/api.service.ts
+export class ApiService {
+  private baseUrl = environment.apiUrl;
+
+  constructor(private http: HttpClient) {}
+
+  get(endpoint: string) {
+    return this.http.get(`${this.baseUrl}/${endpoint}`);
+  }
+
+  post(endpoint: string, data: any) {
+    return this.http.post(`${this.baseUrl}/${endpoint}`, data);
+  }
+}
+```
+
+## 🔹 Uso en features
+
+```ts
+// features/products/services/products.service.ts
+export class ProductsService {
+  constructor(private api: ApiService) {}
+
+  getProducts() {
+    return this.api.get('products');
+  }
+}
+```
+
+---
+
+# 📐 Convenciones de Nombres
+
+## 🔹 Archivos
+
+```bash
+product-list.component.ts
+auth.service.ts
+order.model.ts
+```
+
+## 🔹 Interfaces
+
+```ts
+export interface Product {
+  id: number;
+  name: string;
+}
+```
