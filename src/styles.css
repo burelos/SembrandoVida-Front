@@ -1,3 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'tailwindcss';
+
+/* FLOWBITE */
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";
+@source "../node_modules/flowbite-datepicker";
+
+/* MODO DARK*/
+@custom-variant dark (&:where(.dark, .dark *));

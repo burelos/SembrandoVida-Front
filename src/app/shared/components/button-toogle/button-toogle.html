@@ -1,0 +1,20 @@
+<!-- navbar.component.html -->
+<button (click)="themeService.toggle()"
+        class="p-2 rounded-lg text-gray-500 hover:bg-gray-100 
+               dark:text-gray-400 dark:hover:bg-gray-700">
+
+  <!-- Ícono sol — visible en dark mode -->
+  @if (themeService.darkMode) {
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 1.78a1 1 0 011.42 1.42l-.7.7a1 1 0 11-1.42-1.42l.7-.7zM18 9a1 1 0 110 2h-1a1 1 0 110-2h1zM10 17a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm6.36-2.36a1 1 0 010 1.42l-.7.7a1 1 0 11-1.42-1.42l.7-.7a1 1 0 011.42 0zM3 10a1 1 0 110 2H2a1 1 0 110-2h1zm1.22-5.78a1 1 0 011.42 0l.7.7A1 1 0 115 6.34l-.7-.7a1 1 0 010-1.42zM10 6a4 4 0 100 8 4 4 0 000-8z"/>
+    </svg>
+  }
+
+  <!-- Ícono luna — visible en light mode -->
+  @if (!themeService.darkMode) {
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+    </svg>
+  }
+
+</button>
